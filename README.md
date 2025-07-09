@@ -1,2 +1,2 @@
 # Teaxture45
-Makes a nice texture (not tileable), with "lines" descending.
+Makes a nice texture (tileable), with "lines" descending.
