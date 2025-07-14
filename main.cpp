@@ -27,7 +27,7 @@ void generateValues(vector<vector<vector<float>>>& vec) { // OK.
             for (int j = 0; j < vec[0].size(); ++j) {
                if ((j==0)&&(i==0)) {
                     vec[i][j][k] = 0.01*random_float_between(MINPPM, MAXPPM); // To avoid gray! :-D
-                    vec[i][j][k] = 0.0;
+                  //  vec[i][j][k] = 0.0;
                 } else if(i==0) {
                     vec[i][j][k] =  vec[i][j-1][k] - (stepy/2) + (rand() % stepy );
                 } else if(j==0) {
