@@ -14,17 +14,20 @@ namespace fs = filesystem;
 float const MAXPPM = 65365.0; // included.
 float const MINPPM = 0.0; // included.
 
+float random_float_between(float min, float max) { // OK.
+    return min + static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * (max - min);
+}
+
 void generateValues(vector<vector<vector<float>>>& vec) { // OK.
 // Function to generate random values in the 3D vector, not tileable.
-// Lisser chaque ligne ?
-
-    int stepy = (MAXPPM)/(max(vec.size(),vec[0].size()));
+    int stepy = 1*(MAXPPM-MINPPM)/(max(vec.size(),vec[0].size()));
     clog << "stepy = " << stepy << endl;
     for (int k = 0; k < vec[0][0].size() ; ++k) {
         for (int i = 0; i < vec.size(); ++i) {
             for (int j = 0; j < vec[0].size(); ++j) {
-                if ((j==0)&&(i==0)) {
-                    vec[i][j][k] = MINPPM;
+               if ((j==0)&&(i==0)) {
+                    vec[i][j][k] = 0.01*random_float_between(MINPPM, MAXPPM); // To avoid gray! :-D
+                    vec[i][j][k] = 0.0;
                 } else if(i==0) {
                     vec[i][j][k] =  vec[i][j-1][k] - (stepy/2) + (rand() % stepy );
                 } else if(j==0) {
@@ -37,9 +40,7 @@ void generateValues(vector<vector<vector<float>>>& vec) { // OK.
     }
 }
 
-
-void pyramid(vector<vector<vector<float>>>& map) { // revoir, quoi si pas carré ?. Demi.
-// Pourquoi un demi ??????
+void pyramid(vector<vector<vector<float>>>& map) {  // OK.
     size_t rows = map.size();
     if (rows == 0) return;
     size_t cols = map[0].size();
@@ -59,54 +60,7 @@ void pyramid(vector<vector<vector<float>>>& map) { // revoir, quoi si pas carré
     }
 }
 
-/*void frustumGrey(vector<vector<vector<float>>>& vec) { // Ok, but grey cross, because differences are divided 2 times, at this place/step..
-// Pourquoi un tiers ??????
-    for (int k = 0; k < vec[0][0].size() ; ++k) {
-        for (int i = 0; i < vec.size(); ++i) {
-            for (int j = 0; j < vec[0].size(); ++j) {
-                if ((j<vec[0].size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * j/vec[0].size();
-                } else if((j>2*vec[0].size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * (vec[0].size()-j)/vec[0].size();
-                }
-                if ((i<vec.size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * i/vec.size();
-                } else if((i>2*vec.size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * (vec.size()-i)/vec.size();
-                } else {
-                    vec[i][j][k] =  vec[i][j][k];
-                }
-            }
-        }
-    }
-}
-*/
-/*
-void frustum(vector<vector<vector<float>>>& vec) { // ??
-// Pourquoi un tiers ??????
-    for (int k = 0; k < vec[0][0].size() ; ++k) {
-        for (int i = 0; i < vec.size(); ++i) {
-            for (int j = 0; j < vec[0].size(); ++j) {
-                if ((j<vec[0].size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * j/vec[0].size();
-                } else if((j>2*vec[0].size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * (vec[0].size()-j)/vec[0].size();
-                }
-                if ((i<vec.size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * i/vec.size();
-                } else if((i>2*vec.size()/3)) {
-                    vec[i][j][k] = 3 * vec[i][j][k] * (vec.size()-i)/vec.size();
-                } else {
-                    vec[i][j][k] =  vec[i][j][k];
-                }
-            }
-        }
-    }
-}
-
-*/
-
-void loopValuesDEMI(vector<vector<vector<float>>>& vec, const vector<vector<vector<float>>>& vec2) { // ???
+void loopValuesDEMI(vector<vector<vector<float>>>& vec, const vector<vector<vector<float>>>& vec2) { // OK.
     for (int k = 0; k < vec[0][0].size() ; ++k) {
         for ( int i = 0; i < vec.size(); ++i) {
             for ( int j = 0; j < vec[0].size(); ++j) {
@@ -121,35 +75,13 @@ void loopValuesDEMI(vector<vector<vector<float>>>& vec, const vector<vector<vect
         }
     }
 }
-/*
-void loopValues(vector<vector<vector<float>>>& vec, const vector<vector<vector<float>>>& vec2) { // tiers ???
-    for (int k = 0; k < vec[0][0].size() ; ++k) {
-        for ( int i = 0; i < vec.size(); ++i) {
-            for ( int j = 0; j < vec[0].size(); ++j) {
-                int a = (i+vec.size()/3)%vec.size();
-                int b = (j+(vec[0].size())/3)%(vec[0].size());
-                int c = (i+(2*vec.size())/3)%vec.size();
-                int d = (j+(2*vec[0].size()/3))%(vec[0].size());
-                vec[i][j][k] = vec[i][j][k]
-                               // + vec2[a][j][k] + vec2[i][b][k]
-                               +vec2[c][j][k] + vec2[i][d][k];
-                +vec2[a][b][k] + vec2[c][d][k];
-            }
-        }
-    }
-}
 
-
-*/
-
-vector<vector<vector<float>>> crop_top_left_half_3D(const vector<vector<vector<float>>>& matrix3D) {
+vector<vector<vector<float>>> crop_top_left_half_3D(const vector<vector<vector<float>>>& matrix3D) { // OK.
     size_t height = matrix3D.size();
     size_t width = (height > 0) ? matrix3D[0].size() : 0;
     size_t depth = (width > 0) ? matrix3D[0][0].size() : 0;
-
     size_t half_height = height / 2;
     size_t half_width = width / 2;
-
     vector<vector<vector<float>>> result;
     for (size_t i = 0; i < half_height; ++i) {
         vector<vector<float>> row;
@@ -161,8 +93,9 @@ vector<vector<vector<float>>> crop_top_left_half_3D(const vector<vector<vector<f
     return result;
 }
 
-// Function to stretch the histogram, from true black (MINPPM = zero) to true white (MAXPPM).
+
 void stretchHistogram(vector<vector<vector<float>>>& vec) { // OK.
+// Function to stretch the histogram, from true black (MINPPM = zero) to true white (MAXPPM).
     vector<float> minVec(vec[0][0].size(), 0.0);
     vector<float> maxVec(vec[0][0].size(), 0.0);
     for ( int k = 0; k < vec[0][0].size(); ++k) {
@@ -232,10 +165,11 @@ void writePPM(const vector<vector<vector<float>>>& vec, const string& filename) 
     file.close();
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) { // OK.
     int seed = time(0);
     clog << "seed = " << seed << endl;
     srand(static_cast<unsigned>(seed));
+
     if (argc != 4) {
         cerr << "Usage: " << argv[0] << " <height> <width> <baseFileName>" << endl;
         return 1;
